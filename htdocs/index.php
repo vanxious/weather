@@ -5,7 +5,7 @@
  *
  * @date 2015-02
  * @author Бражников Дмитрий
- * @version 0.6
+ * @version 0.5
  */
 
 ini_set('display_errors', 1);
