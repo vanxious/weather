@@ -1,5 +1,5 @@
 <?php
-
+//коммент
 //Путь к Вашему xml файлу
 $xml_file="http://meteoinfo.ru/xml3/export/pay/220/220.xml";
 $main_dir="/usr/local/lib/weather";
