@@ -15,7 +15,7 @@ class Share
      */
     public static function sendFileToShare(ScriptConfig $script)
     {
-            if ( $script->IsShare === 1) {
+            if ( $script->IsShare == 1) {
 
                 self::$fileName = $script->FileName;
                 self::$cityName = $script->CityName;
@@ -38,8 +38,8 @@ class Share
             $fileSenderFSK = new FileSender( new FSK_Connect() );
             $fileSenderFSK->putFile(self::$fileName);
 
-            $fileSenderST = new FileSender( new ServTerm_Connect() );
-            $fileSenderST->putFile(self::$fileName);
+//            $fileSenderST = new FileSender( new ServTerm_Connect() );
+//            $fileSenderST->putFile(self::$fileName);
     }
 
     /**
@@ -60,7 +60,7 @@ class Share
                         AND Station = '".addslashes(self::$cityName)."'
                         AND tday IS NOT NULL
                         AND dat BETWEEN date_add(date_format(now(), GET_FORMAT(DATE, 'JIS')), INTERVAL -14 DAY)
-                        AND date_add(date_format(now(), GET_FORMAT(DATE, 'JIS')), INTERVAL 7 DAY)
+                                    AND date_add(date_format(now(), GET_FORMAT(DATE, 'JIS')), INTERVAL 7 DAY)
                     ORDER BY dat asc";
 
             $result = DB::getInstance()->query($sql);
@@ -79,7 +79,7 @@ class Share
      */
     private static function _putDataToFile()
     {
-            $full_filename = dirname(__DIR__) . '/files/' . self::$fileName;
+            $full_filename = self::_getFileDir() . self::$fileName;
             self::$file_resource = @fopen($full_filename, 'w+');
             if (self::$file_resource === FALSE) {
                 throw new Exception('Невозможно создать файл ' . $full_filename, 204);
@@ -92,6 +92,31 @@ class Share
             }
 
             fclose(self::$file_resource);
+            Debug::Message('Файл ' . $full_filename . ' создан.');
+    }
+
+    /**
+     * Возвращает директорию, содержащую файлы с погодой,
+     * в случае отсутствия директории создаёт её.
+     *
+     * @return string
+     * @throws Exception
+     */
+    private static function _getFileDir()
+    {
+            $full_filename = Config::getInstance()->getFileDir();
+
+            if ( !is_dir($full_filename) ) {
+                Debug::Message('Создание директории ' . $full_filename);
+
+                $resmk = mkdir($full_filename);
+
+                if ($resmk === FALSE) {
+                    throw new Exception('Невозможно создать директорию ' . $full_filename);
+                }
+            }
+
+            return $full_filename;
     }
 
 }

@@ -11,19 +11,4 @@ class FSK_Connect extends FTPConnect
             'fileMask'   => 'fs_*',
     );
 
-    /**
-     *
-     * @param string $fileName
-     */
-    public function putFile($fileName = NULL)
-    {
-            $this->$fileName = $fileName;
-
-            foreach ($this->getListTT() as $TT) {
-                $result = ftp_fput($this->resource, './' . $TT . '/OUT/' . $this->$fileName, $this->getFileResources(), FTP_ASCII);
-            }
-
-            return $result;
-    }
-
 }

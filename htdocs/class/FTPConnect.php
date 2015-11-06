@@ -4,11 +4,17 @@ abstract class FTPConnect extends CConnect
 {
 
     /**
+     * Массив с конфигурацией
      *
      * @var array
      */
     protected $config;
 
+    /**
+     * Подключение к ftp-серверу
+     *
+     * @var resource
+     */
     protected $resource;
 
     /**
@@ -17,23 +23,39 @@ abstract class FTPConnect extends CConnect
      */
     protected $fileName;
 
+
     public function __construct()
     {
-            $this->resource = @ftp_connect($this->config['host']);
+            $this->resource = ftp_connect($this->config['host']);
 
             if ( !$this->resource ) {
-                throw new Exception("Невозможно установить соединения с ftp сервером {$this->config['host']}.", 100);
+                throw new Exception("Невозможно установить соединение с ftp сервером {$this->config['host']}.", 100);
             }
 
-            $login_result = @ftp_login($this->resource, $this->config['user'], $this->config['pass']);
+            Debug::Message('Установлено соединение с ' . $this->config['host']);
+
+            $login_result = ftp_login($this->resource, $this->config['user'], $this->config['pass']);
 
             if ( !$login_result ) {
                 throw new Exception("Не удалось произвести вход под именем {$this->config['user']}", 100);
             }
 
+            Debug::Message('Авторизация пройдена успешно.');
+
+            $resChdir = ftp_chdir($this->resource, './' . $this->config['defaultDir']);
+
+            if ($resChdir === FALSE) {
+                throw new Exception('Невозможно сменить директорию на FTP-сервере. Сервер: ' . $this->config['host'] . ' Директория: ' . $this->config['defaultDir']);
+            }
+    }
+
+    public function __destruct()
+    {
+            ftp_close($this->resource);
     }
 
     /**
+     * Получение списка директорий по маске, в которые нужно копировать файлы с погодой.
      *
      * @return array
      */
@@ -41,29 +63,38 @@ abstract class FTPConnect extends CConnect
     {
             $listTT = ftp_nlist($this->resource, $this->config['fileMask']);
 
+            sort($listTT, SORT_NATURAL);
+
             return $listTT;
     }
 
-
     /**
+     * Скопировать файл с погодой на ftp-сервер.
      *
-     * @return resource
+     * @param string $fileName
+     * @return void
      */
-    protected function getFileResources()
+    public function putFile($fileName = NULL)
     {
-            $resource = NULL;
-            $fileName = dirname(__DIR__) . '/files/' . $this->fileName;
-            if ( file_exists($fileName) && is_readable($fileName) ) {
-                $resource = @fopen($fileName, 'r');
-            } else {
-                throw new Exception('Невозможно открыть файл "' . $fileName . '". Он не существует либо нет прав для чтения.');
+            if ( empty($fileName) || !is_string($fileName) ) {
+                throw new Exception('Неверный параметр!');
             }
 
-            if ( !$resource ) {
-                throw new Exception('Невозможно открыть файл "' . $fileName . '". Неизвестная ошибка.');
+            $this->fileName = $fileName;
+
+            $localFileName = Config::getInstance()->getFileDir() . $this->fileName;
+
+            if ( !file_exists($localFileName) ) {
+                throw new Exception('При копировании файла на сервер прозошла ошибка. Файл ' . $localFileName . ' не существует!');
             }
 
-            return $resource;
+            foreach ($this->getListTT() as $TT) {
+                $remoteFileName = $TT . '/OUT/' . $this->fileName;
+                //$res = ftp_put($this->resource,  $remoteFileName, $localFileName, FTP_BINARY);
+                $res = TRUE;
+                ($res) ? Debug::Message('Файл ' . $this->fileName . ' cкопирован. Путь /'    . $this->config['defaultDir'] . '/' . $remoteFileName)
+                       : Debug::Message('Файл ' . $this->fileName . ' НЕ cкопирован. Путь /' . $this->config['defaultDir'] . '/' . $remoteFileName);
+            }
     }
 
 }

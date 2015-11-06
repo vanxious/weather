@@ -3,15 +3,15 @@
 class DB
 {
         //Пользуясь случаем передаю Сергею привет! ;)
-//        private $host = 'serv-db.tdanix.ru';
-//        private $user = 'weather';
-//        private $pass = 'forecast';
-//        private $db   = 'weather';
-
-        private $host = '127.0.0.1';
+        private $host = 'serv-db.tdanix.ru';
         private $user = 'weather';
-        private $pass = 'ghbdtn';
+        private $pass = 'forecast';
         private $db   = 'weather';
+
+//        private $host = '127.0.0.1';
+//        private $user = 'weather';
+//        private $pass = 'ghbdtn';
+//        private $db   = 'weather';
 
 
         private $connect;

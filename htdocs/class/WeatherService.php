@@ -58,7 +58,7 @@ abstract class WeatherService
          */
         public function getXMLFile()
         {
-                $dir = dirname(dirname(__FILE__)) . '/xml';
+                $dir = $this->_getXmlDir();
 
                 if (empty($this->fileName)) {
                     throw new Exception ('Не указано имя файла.', 200);
@@ -67,7 +67,7 @@ abstract class WeatherService
                 list($fileName, $ras) = explode('.', $this->fileName);
                 $fileName = $this->className . '_' . $fileName;
 
-                $executeString = 'wget -q -O ' . $dir . '/' . $fileName . '.xml ' . $this->connectionString;
+                $executeString = 'wget -q -O ' . $dir . $fileName . '.xml ' . $this->connectionString;
 
                 try {
                     @exec($executeString);
@@ -77,7 +77,7 @@ abstract class WeatherService
                 }
 
                 try {
-                    $this->xml = @simplexml_load_file($dir . '/' . $fileName . '.xml');
+                    $this->xml = @simplexml_load_file($dir . $fileName . '.xml');
                 } catch (Exception $e) {
                     throw new Exception('Невозможно считать данные из файла. ' . $e->getMessage(), 201);
                 }
@@ -85,6 +85,32 @@ abstract class WeatherService
                 if ($this->xml === FALSE) {
                     throw new Exception('Невозможно получить файл xml.', 202);
                 }
+
+                Debug::Message('Загружен файл ' . $dir . $fileName . '.xml');
+        }
+
+        /**
+         * Возвращает директорию, содержащую xml файлы,
+         * в случае отсутствия директории создаёт её.
+         *
+         * @return string
+         * @throws Exception
+         */
+        private function _getXmlDir()
+        {
+            $dir = Config::getInstance()->getXMLDir();
+
+            if ( !is_dir($dir) ) {
+                Debug::Message('Создание директории ' . $dir);
+
+                $resmk = mkdir($dir);
+
+                if ($resmk === FALSE) {
+                    throw new Exception('Невозможно создать директорию ' . $dir);
+                }
+            }
+
+            return $dir;
         }
 
 
@@ -180,10 +206,10 @@ abstract class WeatherService
          */
         public function deleteXMLFile()
         {
-                $dir = dirname(dirname(__FILE__)) . '/xml';
+                $dir = Config::getInstance()->getXMLDir();
 
                 list($fileName, $ras) = explode('.', $this->fileName);
-                $fileName = $dir . '/' . $this->className . '_' . $fileName . '.xml';
+                $fileName = $dir . $this->className . '_' . $fileName . '.xml';
                 $res = @unlink($fileName);
                 if ($res === FALSE) {
                     Log::add(date('M d H:i:s') . ' ' . $this->cityName . ' Невозможно удалить файл XML. Возможно, будет использоваться старый.', 203);

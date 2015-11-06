@@ -65,6 +65,8 @@ class Log
                     $file = @file_put_contents($path, date('M d H:i:s') . ' ' . $errorByCode . "\n", FILE_APPEND);
                 }
 
+                Debug::Message($string);
+
         }//function
 
 
@@ -79,7 +81,7 @@ class Log
                     $resDelete = @unlink(self::$fileError);
                     if ($resDelete === FALSE) {
                         //каламбурчик небольшой, не можем удалить файл.
-                        self::add(date('M d H:i:s') . 'Невозможно удалить файл ' . self::$fileError . '!');
+                        self::add(date('M d H:i:s') . ' Невозможно удалить файл ' . self::$fileError . '!');
                     }
                 }
         }//function

@@ -16,15 +16,20 @@ class Scripts
          */
         public static function getListEnableScript()
         {
-                $sql = '
-                        SELECT
-                            id
-                        FROM scripts
-                        WHERE
-                            IsEnable = 1
+                $addWhere = '';
+                if ( !Debug::IsDebug() ) {
+                    $addWhere = ' and NOW() > DATE_ADD(LastRun, INTERVAL GREATEST( ROUND(1440/GREATEST(RunPerDay,1)), 1 ) MINUTE)';
+                }
 
-                    ';
-                    //and NOW() > DATE_ADD(LastRun, INTERVAL GREATEST( ROUND(1440/GREATEST(RunPerDay,1)), 1 ) MINUTE)
+                $sql = '
+                    SELECT
+                        id
+                    FROM scripts
+                    WHERE
+                        IsEnable = 1
+                        ' . $addWhere . '
+                    LIMIT 1
+                ';
 
                 $result = DB::getInstance()->query($sql);
 

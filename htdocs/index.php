@@ -8,10 +8,12 @@
  * @version 0.6
  */
 
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
 require_once 'autoload.php';
+
+if ( Debug::IsDebug() ) {
+    ini_set('display_errors', 1);
+    error_reporting(E_ALL);
+}
 
 /**
  * Удаляем файл weather.err
@@ -26,7 +28,7 @@ foreach (Scripts::getListEnableScript() as $script) {
 
         //bool class_exists ( string $class_name [, bool $autoload = true ] )
         if ( !class_exists($script->ClassName, TRUE) ) {
-            Log::add(date('M d H:i:s') . 'ОШИБКА. Класс ' . $script->ClassName . ' не объявлен!');
+            Log::add(date('M d H:i:s') . ' ОШИБКА. Класс ' . $script->ClassName . ' не объявлен!');
             continue;
         }
 
@@ -34,14 +36,15 @@ foreach (Scripts::getListEnableScript() as $script) {
         $object = new $className($script);
 
         if ( !($object instanceof WeatherService) ) {
-            Log::add(date('M d H:i:s') . 'ОШИБКА. Класс ' . $script->ClassName . ' не реализует необходимый интерфейс!');
+            Log::add(date('M d H:i:s') . ' ОШИБКА. Класс ' . $script->ClassName . ' не реализует необходимый интерфейс!');
             continue;
         }
 
         $object->run();
         unset($object);
 
-        //Share::sendFileToShare($script);
+        //создание файлов происходит перед их отправкой на шары
+        Share::sendFileToShare($script);
         //$script->updateTimeRun();
 
     } catch (Exception $e) {
