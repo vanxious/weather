@@ -20,7 +20,7 @@ if ( Debug::IsDebug() ) {
  * Если фатальная ошибка сохранилась, то она будет опять записана в файл.
  * Если же ошибка исправилась, то гуд, никого будить не нужно.
  */
-Log::deleteErrorFile();
+//Log::deleteErrorFile();
 
 //TODO сделать единую точку входа с оборачиванием её в try-catch
 foreach (Scripts::getListEnableScript() as $script) {

@@ -24,6 +24,7 @@ class Config
             $this->XMLDir  = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'xml'   . DIRECTORY_SEPARATOR;
     }
 
+    
     public static function getInstance()
     {
             if ( empty(self::$_instance) ) {
@@ -32,10 +33,12 @@ class Config
             return self::$_instance;
     }
 
+
     public function getFileDir()
     {
             return $this->FileDir;
     }
+
 
     public function getXMLDir()
     {

@@ -19,9 +19,13 @@ class Debug
      */
     public static function IsDebug()
     {
-            return self::$IsDebugMode;
+        return self::$IsDebugMode;
     }
 
+    /**
+     * @param bool $DebugMode
+     * @throws Exception
+     */
     public static function SetDebug($DebugMode)
     {
         if (!is_bool($DebugMode)) {
@@ -37,14 +41,12 @@ class Debug
      */
     public static function Message($Message = NULL)
     {
-            if ( !is_string($Message) ) {
-                throw new Exception('Передан параметр неподдерживаего типа. Ожидалось "string" пришло "' . gettype($Message) . '".' );
-            }
+        if ( !is_string($Message) ) {
+            throw new Exception('Передан параметр неподдерживаего типа. Ожидалось "string" пришло "' . gettype($Message) . '".' );
+        }
 
-            if ( self::$IsDebugMode ) {
-                echo $Message, "\n";
-            }
+        if ( self::$IsDebugMode ) {
+            echo $Message, "\n";
+        }
     }
-
 }
-

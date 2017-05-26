@@ -66,7 +66,7 @@ class Log
                 }
 
                 Debug::Message($string);
-
+                self::addToDB($string, $code);
         }//function
 
 
@@ -89,11 +89,10 @@ class Log
         /**
          * Добавление лога в базу данных.
          */
-        private static function _addToDB($string = NULL, $code = NULL)
+        private static function addToDB($string = NULL, $code = NULL)
         {
-            //$sql = 'INSERT INTO log(Date, Message, ErrorCode) VALUES ("NOW()", "'.addcslashes($string).'", '.(int)$code.')';
-            //DB::execute($sql);
-
+            $sql = 'INSERT INTO log(Message, ErrorCode) VALUES ("'.addslashes($string).'", '.(int)$code.')';
+            DB::getInstance()->execute($sql);
         }
 
 }

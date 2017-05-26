@@ -27,8 +27,7 @@ class Scripts
                     FROM scripts
                     WHERE
                         IsEnable = 1
-                        ' . $addWhere . '
-                    LIMIT 1
+                        ' . $addWhere . '                    
                 ';
 
                 $result = DB::getInstance()->query($sql);
