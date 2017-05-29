@@ -90,13 +90,9 @@ abstract class FTPConnect extends CConnect
 
         foreach ($this->getListTT() as $TT) {
             $remoteFileName = $TT . '/OUT/' . $this->fileName;
-            $res = ftp_put($this->resource,  $remoteFileName, $localFileName, FTP_BINARY);
-            $res = TRUE;
-            ($res) ? Debug::Message('Файл ' . $this->fileName . ' cкопирован. Путь /'    . $this->config['defaultDir'] . '/' . $remoteFileName)
+            $resultPutFile = @ftp_put($this->resource,  $remoteFileName, $localFileName, FTP_BINARY);
+            ($resultPutFile) ? Debug::Message('Файл ' . $this->fileName . ' cкопирован. Путь /'    . $this->config['defaultDir'] . '/' . $remoteFileName)
                    : Debug::Message('Файл ' . $this->fileName . ' НЕ cкопирован. Путь /' . $this->config['defaultDir'] . '/' . $remoteFileName);
-
-            //TODO: на тестирование!
-            break;
         }
     }
 

@@ -92,7 +92,6 @@ class Wunderground extends WeatherService
         $this->readDataFromJson();
 
         foreach ( $this->json->hourly_forecast as $tempData) {
-
             //день
             if ($tempData->FCTTIME->hour == 12) {
                 $date = $tempData->FCTTIME->year . '-' . $tempData->FCTTIME->mon_padded . '-' . $tempData->FCTTIME->mday_padded;
@@ -101,14 +100,14 @@ class Wunderground extends WeatherService
                 $this->weatherData[$date]['wind_dir'] = $tempData->wdir->degrees;
                 $this->weatherData[$date]['wind_speed'] = round($tempData->wspd->metric * (10/36), 0); //перевести из км/час в м/с
                 $this->weatherData[$date]['weather_conditions'] = $tempData->condition;
-                $this->weatherData[$date]['pday'] = $tempData->mslp->metric;
+                $this->weatherData[$date]['pday'] = $tempData->mslp->metric; //над уровнем моря!!!
             }
 
             //ночь
             if ($tempData->FCTTIME->hour == 0) {
                 $date = $tempData->FCTTIME->year . '-' . $tempData->FCTTIME->mon_padded . '-' . $tempData->FCTTIME->mday_padded;
                 $this->weatherData[$date]['tnight'] = $tempData->temp->metric;
-                $this->weatherData[$date]['pnight'] = $tempData->mslp->metric;
+                $this->weatherData[$date]['pnight'] = $tempData->mslp->metric; //над уровнем моря!!!
             }
         }
 
