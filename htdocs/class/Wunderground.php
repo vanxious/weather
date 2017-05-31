@@ -56,7 +56,7 @@ class Wunderground extends WeatherService
 
     private  function loadFileJsonFromWeb()
     {
-        $executeString = 'wget -q -O ' . $this->fullFilePath  . ' ' . $this->connectionString;
+        $executeString = 'wget -q -O ' . $this->fullFilePath  . ' "' . $this->connectionString . '"';
 
         try {
             @exec($executeString);
