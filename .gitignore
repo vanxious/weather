@@ -1,2 +1,9 @@
 /nbproject/private/
 /config/db_config.php
+/config/app_config.php
+/.vendor
+/files
+/xml
+/coverage
+.idea/
+
