@@ -1,5 +1,7 @@
 <?php
 
+namespace Weather;
+
 class DB
 {
     private $host;
@@ -10,23 +12,28 @@ class DB
     private $connect;
     protected static $_instance;
 
+    /**
+     * TODO: реализовать принцип "ленивого" конструктора
+     * DB constructor.
+     * @throws \Exception
+     */
     private function __construct()
     {
         $db_conf_file = dirname(__DIR__) . '/config/db_config.php';
         if (!file_exists($db_conf_file)) {
-            throw new Exception('Не найден файл конфигурации. "' . $db_conf_file . '"');
+            throw new \Exception('Не найден файл конфигурации. "' . $db_conf_file . '"');
         }
 
         $db_conf = include_once($db_conf_file);
         $this->host = $db_conf['host'];
-        $this->db = $db_conf['db'];
+        $this->db   = $db_conf['db'];
         $this->user = $db_conf['user'];
         $this->pass = $db_conf['pass'];
 
-        $this->connect = new PDO("mysql:host=$this->host;dbname=$this->db;charset=utf8", $this->user, $this->pass);
+        $this->connect = new \PDO("mysql:host=$this->host;dbname=$this->db;charset=utf8", $this->user, $this->pass);
 
         if (!$this->connect) {
-            throw new SQLException('Невозможно установить соединения с БД.', 100);
+            throw new \SQLException('Невозможно установить соединения с БД.', 100);
         }
     }
 
@@ -60,7 +67,7 @@ class DB
 
         $sth = $object->connect->prepare($sql);
         if ($sth->execute() === FALSE) {
-            throw new Exception('Невозможно выполнить запрос: "'.$sql.'"', 101);
+            throw new \Exception('Невозможно выполнить запрос: "'.$sql.'"', 101);
         }
 
         return $sth->rowCount();
@@ -79,7 +86,7 @@ class DB
         $sth = $object->connect->prepare($sql);
 
         if ($sth === FALSE) {
-            throw new Exception('Невозможно выполнить запрос: "'.$sql.'"', 102);
+            throw new \Exception('Невозможно выполнить запрос: "'.$sql.'"', 102);
         }
 
         $sth->execute();

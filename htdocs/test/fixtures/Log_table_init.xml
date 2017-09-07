@@ -1,0 +1,5 @@
+<?xml version="1.0" ?>
+<dataset>
+    <log RecordDate="2017-09-07 09:45:31" Message="Загружен файл /home/dnb751/public_html/weather/htdocs/xml/Wunderground_biysk.json" ErrorCode="0" />
+    <log RecordDate="2017-09-05 15:47:39" Message="Тестовое сообщение" ErrorCode="0" />
+</dataset>

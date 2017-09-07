@@ -1,11 +1,13 @@
 <?php
-
 /**
  * Получение погоды с популярного ресурса по прогнозу погоды Яндекс
  *
  * @date 2017-05
  * @author Бражников Дмитрий.
  */
+
+namespace Weather;
+
 class Wunderground extends WeatherService
 {
     private $json;
@@ -18,8 +20,21 @@ class Wunderground extends WeatherService
     {
         parent::__construct($scriptProperties);
         $this->connectionString = str_replace('%city%', $this->cityId, $this->connectionString);
+    }
 
+    public function run()
+    {
         $this->buildFullFileName();
+
+        $this->getJSONFile();
+
+        $this->getData();
+
+        $resultUpdate = $this->updateData();
+
+        $resultInsert = $this->insertData();
+
+        Log::message($this->cityName . ', затронуто ' . ((int)$resultUpdate + (int)$resultInsert) . " строк.\n");
     }
 
     private function buildFullFileName()
@@ -30,39 +45,25 @@ class Wunderground extends WeatherService
         $this->fullFilePath = $this->getDirFilePath() . $fileName . '.json';
     }
 
-    public function run()
-    {
-        $this->getJSONFile();
-
-        $this->getData();
-
-        $resultUpdate = $this->updateData();
-
-        $resultInsert = $this->insertData();
-
-        Log::add(date('M d H:i:s') . ' ' . $this->cityName . ', затронуто ' . ((int)$resultUpdate + (int)$resultInsert) . " строк.\n");
-    }
-
     private function getJSONFile()
     {
         if (empty($this->fileName)) {
-            throw new Exception ('Не указано имя файла.', 200);
+            throw new \Exception ('Не указано имя файла.', 200);
         }
 
         $this->loadFileJsonFromWeb();
 
-        Debug::Message('Загружен файл ' . $this->fullFilePath );
+        Log::message('Загружен файл ' . $this->fullFilePath );
     }
 
-    private  function loadFileJsonFromWeb()
+    protected function loadFileJsonFromWeb()
     {
         $executeString = 'wget -q -O ' . $this->fullFilePath  . ' "' . $this->connectionString . '"';
 
         try {
             @exec($executeString);
-        } catch (Exception $e) {
-            //вызов этого события крааайне маловероятен
-            throw new Exception('Невозможно подключиться к удалённом серверу. ' . $e->getMessage());
+        } catch (\Exception $e) {
+            throw new \Exception('Невозможно подключиться к удалённом серверу. ' . $e->getMessage());
         }
     }
 
@@ -75,12 +76,12 @@ class Wunderground extends WeatherService
         $dir = Config::getInstance()->getXMLDir();
 
         if (!is_dir($dir)) {
-            Debug::Message('Создание директории ' . $dir);
+            Log::message('Создание директории ' . $dir);
 
             $resmk = mkdir($dir);
 
             if ($resmk === FALSE) {
-                throw new Exception('Невозможно создать директорию ' . $dir);
+                throw new \Exception('Невозможно создать директорию ' . $dir);
             }
         }
 
@@ -110,7 +111,6 @@ class Wunderground extends WeatherService
                 $this->weatherData[$date]['pnight'] = $tempData->mslp->metric; //над уровнем моря!!!
             }
         }
-
     }
 
     private function readDataFromJson()
@@ -119,18 +119,40 @@ class Wunderground extends WeatherService
             if (file_exists($this->fullFilePath)) {
                 $resultReadFile = file_get_contents($this->fullFilePath);
             } else {
-                throw new Exception('Файл "' . $this->fullFilePath . '" не найден. Ошибка wget.');
+                throw new \Exception('Файл "' . $this->fullFilePath . '" не найден. Ошибка wget.');
             }
 
             if ($resultReadFile === false) {
-                throw new Exception('Во время чтения файла "' . $this->fullFilePath . '" возникла ошибка.');
+                throw new \Exception('Во время чтения файла "' . $this->fullFilePath . '" возникла ошибка.');
+            }
+
+            if (strlen($resultReadFile) === 0) {
+                throw new \Exception('Файл пуст "' . $this->fullFilePath . '".');
             }
 
             $this->json = json_decode($resultReadFile);
-        } catch (Exception $e) {
-            throw new Exception('Невозможно считать данные из файла. ' . $e->getMessage(), 201);
+        } catch (\Exception $e) {
+            Log::message('Невозможно считать данные из файла. ' . $e->getMessage());
+            throw new \Exception('Невозможно считать данные из файла. ' . $e->getMessage(), 201);
         }
     }
 
+    /**
+     * Удаление xml файла
+     * @return bool
+     */
+    public function deleteXMLFile()
+    {
+        $dir = Config::getInstance()->getXMLDir();
+
+        list($fileName, $ras) = explode('.', $this->fileName);
+        $fileName = $dir . $this->className . '_' . $fileName . '.json';
+        $res = @unlink($fileName);
+        if ($res === false) {
+            Log::message($this->cityName . ' Невозможно удалить файл XML.', true);
+        }
+
+        return $res;
+    }
 
 }

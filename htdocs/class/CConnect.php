@@ -1,5 +1,7 @@
 <?php
 
+namespace Weather;
+
 abstract class CConnect
 {
 

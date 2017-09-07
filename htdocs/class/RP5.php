@@ -5,6 +5,9 @@
  * @date 2014-03
  * @author Бражников Дмитрий.
  */
+
+namespace Weather;
+
 class RP5 extends WeatherService
 {
 

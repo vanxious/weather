@@ -1,5 +1,7 @@
 <?php
 
+namespace Weather;
+
 class ServTerm_Connect extends CConnect
 {
 

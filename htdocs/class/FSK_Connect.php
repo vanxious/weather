@@ -1,5 +1,7 @@
 <?php
 
+namespace Weather;
+
 class FSK_Connect extends FTPConnect
 {
 

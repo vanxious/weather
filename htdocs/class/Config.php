@@ -1,5 +1,7 @@
 <?php
 
+namespace Weather;
+
 class Config
 {
 
@@ -20,56 +22,35 @@ class Config
 
     private function __construct()
     {
-            $this->FileDir = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'files' . DIRECTORY_SEPARATOR;
-            $this->XMLDir  = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'xml'   . DIRECTORY_SEPARATOR;
+        $this->FileDir = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'files' . DIRECTORY_SEPARATOR;
+        $this->XMLDir  = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'xml'   . DIRECTORY_SEPARATOR;
     }
 
-    
+
     public static function getInstance()
     {
-            if ( empty(self::$_instance) ) {
-                self::$_instance = new self;
-            }
-            return self::$_instance;
+        if ( empty(self::$_instance) ) {
+            self::$_instance = new self;
+        }
+        return self::$_instance;
     }
-
 
     public function getFileDir()
     {
-            return $this->FileDir;
+        return $this->FileDir;
     }
-
 
     public function getXMLDir()
     {
-            return $this->XMLDir;
+        return $this->XMLDir;
     }
 
-
-    /**
-     * Это только для тестов!
-     * Обучения ради.
-     *
-     * @param string $key
-     * @return string
-     */
-    private function getProperty( $key )
+    public static function DebugMode()
     {
+        $configAppParams = require dirname(__DIR__) . '/config/app_config.php';
 
-            $class = new ReflectionClass( __CLASS__ );
-
-            $property = $class->getProperties();
-
-            var_dump($property);
-
-            if ( isset($property[$key]) ) {
-                return $class->getPropertyValue($key);
-            }
-
-            return 'Ничего не получилось' . "\n";
-
+        return $configAppParams['debugMode'];
     }
-
 
 }
 

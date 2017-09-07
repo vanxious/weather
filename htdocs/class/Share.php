@@ -2,6 +2,9 @@
 /**
  * Копирование файлов с погодой на общедоступные шары.
  */
+
+namespace Weather;
+
 class Share
 {
     public static $fileName = '';
@@ -60,7 +63,7 @@ class Share
         }
 
         fclose(self::$file_resource);
-        Debug::Message('Файл ' . $full_filename . ' создан.');
+        Log::Message('Файл ' . $full_filename . ' создан.');
     }
 
     /**
@@ -75,7 +78,7 @@ class Share
         $full_filename = Config::getInstance()->getFileDir();
 
         if ( !is_dir($full_filename) ) {
-            Debug::Message('Создание директории ' . $full_filename);
+            Log::Message('Создание директории ' . $full_filename);
 
             $resmk = mkdir($full_filename);
 

@@ -1,5 +1,7 @@
 <?php
 
+namespace Weather;
+
 abstract class FTPConnect extends CConnect
 {
 
@@ -29,7 +31,7 @@ abstract class FTPConnect extends CConnect
         $this->resource = ftp_connect($this->config['host']);
 
         if ( !$this->resource ) {
-            throw new Exception("Невозможно установить соединение с ftp сервером {$this->config['host']}.", 100);
+            throw new \Exception("Невозможно установить соединение с ftp сервером {$this->config['host']}.", 100);
         }
 
         Debug::Message('Установлено соединение с ' . $this->config['host']);
@@ -37,7 +39,7 @@ abstract class FTPConnect extends CConnect
         $login_result = ftp_login($this->resource, $this->config['user'], $this->config['pass']);
 
         if ( !$login_result ) {
-            throw new Exception("Не удалось произвести вход под именем {$this->config['user']}", 100);
+            throw new \Exception("Не удалось произвести вход под именем {$this->config['user']}", 100);
         }
 
         Debug::Message('Авторизация пройдена успешно.');
@@ -45,7 +47,7 @@ abstract class FTPConnect extends CConnect
         $resChdir = ftp_chdir($this->resource, './' . $this->config['defaultDir']);
 
         if ($resChdir === FALSE) {
-            throw new Exception('Невозможно сменить директорию на FTP-сервере. Сервер: ' . $this->config['host'] . ' Директория: ' . $this->config['defaultDir']);
+            throw new \Exception('Невозможно сменить директорию на FTP-сервере. Сервер: ' . $this->config['host'] . ' Директория: ' . $this->config['defaultDir']);
         }
     }
 
@@ -77,7 +79,7 @@ abstract class FTPConnect extends CConnect
     public function putFile($fileName = NULL)
     {
         if ( empty($fileName) || !is_string($fileName) ) {
-            throw new Exception('Неверный параметр!');
+            throw new \Exception('Неверный параметр!');
         }
 
         $this->fileName = $fileName;
@@ -85,7 +87,7 @@ abstract class FTPConnect extends CConnect
         $localFileName = Config::getInstance()->getFileDir() . $this->fileName;
 
         if ( !file_exists($localFileName) ) {
-            throw new Exception('При копировании файла на сервер прозошла ошибка. Файл ' . $localFileName . ' не существует!');
+            throw new \Exception('При копировании файла на сервер прозошла ошибка. Файл ' . $localFileName . ' не существует!');
         }
 
         foreach ($this->getListTT() as $TT) {

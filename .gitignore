@@ -1,9 +1,20 @@
+##создаётся IDE
 /nbproject/private/
-/config/db_config.php
-/config/app_config.php
-/.vendor
-/files
-/xml
-/coverage
 .idea/
+
+##зависимости
+/htdocs/vendor/
+/htdocs/.vendor/
+
+##отчёт о покрытии кода тестами
+/htdocs/coverage/
+
+##служебные директории
+/htdocs/files/
+/htdocs/xml/
+/htdocs/log/
+
+##файлы конфигурации
+/htdocs/config/db_config.php
+/htdocs/config/app_config.php
 

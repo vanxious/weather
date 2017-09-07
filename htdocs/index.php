@@ -10,7 +10,12 @@
 
 require_once 'autoload.php';
 
-if ( Debug::IsDebug() ) {
+use Weather\Log;
+use Weather\Scripts;
+use Weather\WeatherService;
+use Weather\Config;
+
+if ( Config::DebugMode() ) {
     ini_set('display_errors', 1);
     error_reporting(E_ALL);
 }
@@ -23,20 +28,20 @@ if ( Debug::IsDebug() ) {
 Log::deleteErrorFile();
 
 //TODO сделать единую точку входа с оборачиванием её в try-catch
-foreach (Scripts::getListEnableScript() as $script) {
+$scriptObjects = Scripts::getListEnableScript();
+foreach ($scriptObjects as $script) {
     try {
-
         //bool class_exists ( string $class_name [, bool $autoload = true ] )
-        if ( !class_exists($script->ClassName, TRUE) ) {
-            Log::add(date('M d H:i:s') . ' ОШИБКА. Класс ' . $script->ClassName . ' не объявлен!');
+        if ( !class_exists('Weather\\' . $script->ClassName, TRUE) ) {
+            Log::message('ОШИБКА. Класс ' . $script->ClassName . ' не объявлен!');
             continue;
         }
 
-        $className = $script->ClassName;
+        $className = 'Weather\\' . $script->ClassName;
         $object = new $className($script);
 
         if ( !($object instanceof WeatherService) ) {
-            Log::add(date('M d H:i:s') . ' ОШИБКА. Класс ' . $script->ClassName . ' не реализует необходимый интерфейс!');
+            Log::message('ОШИБКА. Класс ' . $script->ClassName . ' не реализует необходимый интерфейс!');
             continue;
         }
 
@@ -44,14 +49,15 @@ foreach (Scripts::getListEnableScript() as $script) {
         unset($object);
 
         //создание файлов происходит перед их отправкой на шары
-        Share::sendFileToShare($script);
+        //Share::sendFileToShare($script);
+        //TODO: перенести отправку на шару в объект $script
         $script->updateTimeRun();
 
     } catch (Exception $e) {
-        Log::add(date('M d H:i:s') . ' ' . $script->CityName . ' ' . $e->getMessage() . "\n", $e->getCode());
+        Log::message($script->CityName . ' ' . $e->getMessage() . "\n");
     }
 }//foreach
 
-if (Scripts::getConfigCount() === 0) {
-    Log::add(date('M d H:i:s') . " Запуск обновления погодных данных. Нечего обновлять. Выход. \n");
+if (count($scriptObjects) === 0) {
+    Log::message("Запуск обновления погодных данных. Нечего обновлять. Выход. \n");
 }

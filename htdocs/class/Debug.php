@@ -1,9 +1,13 @@
 <?php
-
 /**
  * Общий класс конфигурации всего приложения.
  * Настройки необходимые в разных местах программы.
  */
+
+//TODO: удалить
+
+namespace Weather;
+
 class Debug
 {
 
@@ -29,7 +33,7 @@ class Debug
     public static function SetDebug($DebugMode)
     {
         if (!is_bool($DebugMode)) {
-            throw new Exception('Передан параметр неподдерживаего типа. Ожидалось "bool" пришло "' . gettype($DebugMode) . '".' );
+            throw new \Exception('Передан параметр неподдерживаего типа. Ожидалось "bool" пришло "' . gettype($DebugMode) . '".' );
         }
         self::$IsDebugMode = $DebugMode;
     }
@@ -42,11 +46,13 @@ class Debug
     public static function Message($Message = NULL)
     {
         if ( !is_string($Message) ) {
-            throw new Exception('Передан параметр неподдерживаего типа. Ожидалось "string" пришло "' . gettype($Message) . '".' );
+            throw new \Exception('Передан параметр неподдерживаего типа. Ожидалось "string" пришло "' . gettype($Message) . '".' );
         }
 
         if ( self::$IsDebugMode ) {
-            echo $Message, "\n";
+            echo date('M d H:i:s') . ' ' . $Message, "\n";
         }
+
+        return true;
     }
 }

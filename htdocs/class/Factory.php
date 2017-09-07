@@ -1,24 +1,24 @@
 <?php
-
 /**
  * Статичный класс для порождение объектов типа "запись таблицы".
  */
+
+namespace Weather;
+
+
 class Factory
 {
-
     /**
      * Идентификатор записи в БД.
      * @var integer
      */
     private static $recordId;
 
-
     /**
      * Название таблицы, которая содержит конфигурационные записи.
      * @var string
      */
     private static $table = 'scripts';
-
 
     /**
      * Порождение объектов
@@ -28,15 +28,13 @@ class Factory
     public static function createRecord($id = null)
     {
         if ( empty($id) || !is_int($id) ) {
-            throw new Exception('Передан параметр неверного типа.');
+            throw new \InvalidArgumentException('Передан параметр неверного типа.');
         }
 
         self::$recordId = $id;
         $recordData = self::getRecordData();
 
-        $object = new ScriptConfig();
-
-        $object->setRecordId((int)$id);
+        $object = new ScriptConfig($id);
 
         foreach ($recordData as $key => $value) {
             $object->$key = $value;
@@ -44,7 +42,6 @@ class Factory
 
         return $object;
     }
-
 
     /**
      * Получение данных из таблицы.
@@ -56,7 +53,7 @@ class Factory
         $recordArray = DB::getInstance()->query($sql);
 
         if ( $recordArray === FALSE ) {
-            throw new Exception('Невозможно выполнить запрос: "' . $sql . '"');
+            throw new \Exception('Невозможно выполнить запрос: "' . $sql . '"');
         }
 
         return $recordArray[0];

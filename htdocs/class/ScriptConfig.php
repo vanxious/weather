@@ -1,12 +1,13 @@
 <?php
-
 /**
  *
  * @author Бражников Дмитрий <brazhnikov_dn@anixtd.ru>
  */
+
+namespace Weather;
+
 class ScriptConfig
 {
-
     /**
      *
      * @var integer
@@ -15,13 +16,25 @@ class ScriptConfig
 
     /**
      *
+     * @param integer $id
+     * @throws Exception
+     */
+    public function __construct($id = NULL)
+    {
+        if ( !is_int($id) ) {
+            throw new \InvalidArgumentException('Недопустимый тип параметра.' . __FILE__ . ':' . __METHOD__ . ':' . __LINE__);
+        }
+        $this->record_id = $id;
+    }
+
+    /**
+     *
      * @return void
      */
     public function updateTimeRun()
     {
-
         if ( empty($this->record_id) ) {
-            throw new Exception('Не определён идентификатор записи скрипта. ' . __FILE__ . ':' . __METHOD__ . ':' . __LINE__ );
+            throw new \InvalidArgumentException('Не определён идентификатор записи скрипта. ' . __FILE__ . ':' . __METHOD__ . ':' . __LINE__ );
         }
 
         $query = 'UPDATE scripts
@@ -30,20 +43,6 @@ class ScriptConfig
                   WHERE id = ' . $this->record_id;
 
         DB::getInstance()->execute($query);
-
-    }
-
-    /**
-     *
-     * @param integer $id
-     * @throws Exception
-     */
-    public function setRecordId($id = NULL)
-    {
-        if ( !is_int($id) ) {
-            throw new Exception('Недопустимый тип параметра.' . __FILE__ . ':' . __METHOD__ . ':' . __LINE__);
-        }
-        $this->record_id = $id;
     }
 
     /**
